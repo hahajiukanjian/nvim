@@ -7,8 +7,10 @@ return {
             "utilyre/barbecue.nvim",
             "SmiteshP/nvim-navic",
         },
+
         config = function()
             vim.cmd([[colorscheme tokyonight-day]])
+            -- vim.cmd([[colorscheme tokyonight]])
             require('lualine').setup {
                 options = {
                     theme = 'tokyonight'

@@ -9,7 +9,7 @@ end
 map('n', 's', '<NOP>')
 map('n', 's', '<cmd>noh<CR>')
 map('n', 'S', '<cmd>w<CR>')
-map('n', 'Q', '<cmd>q<CR>')
+map('n', 'Q', '<cmd>bd<CR>')
 map('n', 'J', '5j')
 map('n', 'K', '5k')
 map('n', 'H', 'b')
@@ -30,8 +30,12 @@ map('n', '_', 'Nzz')
 map('n', '<leader>ss', '<C-w>v')
 map('n', '<leader>sh', '<C-w>s')
 -- https://www.reddit.com/r/vim/comments/2k4cbr/problem_with_gj_and_gk/
-vim.keymap.set("n", "j", [[v:count ? 'j' : 'gj']], { noremap = true, expr = true })
-vim.keymap.set("n", "k", [[v:count ? 'k' : 'gk']], { noremap = true, expr = true })
+map("n", "j", [[v:count ? 'j' : 'gj']], { noremap = true, expr = true })
+map("n", "k", [[v:count ? 'k' : 'gk']], { noremap = true, expr = true })
+map("n", "<leader>n", "<cmd>bNext<CR>")
+map("n", "<leader>Q", "<cmd>q<CR>")
+map("n", "<leader>ww", "<C-w><C-w>")
+map("n", "U", "<C-r>")
 
 -- insert mode
 map('i', 'jk', '<ESC>')
@@ -47,3 +51,4 @@ map('x', 'H', 'b')
 map('x', 'L', 'w')
 map('x', '<tab>', '>gv')
 map('x', '<S-tab>', '<gv')
+

@@ -32,6 +32,7 @@ return {
             bashls = {},
             jsonls = {},
             lemminx = {},
+            yamlls = {},
             -- ocamllsp = {},
             -- taplo = {},
             -- ruff_lsp = {},

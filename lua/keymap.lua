@@ -5,11 +5,31 @@ local function map(mode, lhs, rhs, opts)
   vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 end
 
+function smart_quit()
+    -- 获取当前列出的 buffer 数量
+    local buffers = vim.fn.len(vim.fn.getbufinfo({buflisted = 1}))
+    -- 如果只有一个 buffer，执行 :q
+    if buffers == 1 then
+        vim.cmd('q')
+    -- 否则，执行 :bd 关闭当前 buffer
+    else
+        vim.cmd('bd')
+    end
+end
+
+-- 将 Q 键映射到 smart_quit 函数
+vim.api.nvim_set_keymap('n', 'Q', ':lua smart_quit()<CR>', {noremap = true, silent = true})
+
+
 -- noremal mode
 map('n', 's', '<NOP>')
+map('n', '<C-l>', '<NOP>')
+map('n', '<C-k>', '<NOP>')
+map('n', '<C-j>', '<NOP>')
+map('n', '<C-h>', '<NOP>')
 map('n', 's', '<cmd>noh<CR>')
 map('n', 'S', '<cmd>w<CR>')
-map('n', 'Q', '<cmd>bd<CR>')
+-- map('n', 'Q', '<cmd>bd<CR>')
 map('n', 'J', '5j')
 map('n', 'K', '5k')
 map('n', 'H', 'b')
@@ -33,7 +53,7 @@ map('n', '<leader>sh', '<C-w>s')
 map("n", "j", [[v:count ? 'j' : 'gj']], { noremap = true, expr = true })
 map("n", "k", [[v:count ? 'k' : 'gk']], { noremap = true, expr = true })
 map("n", "<leader>n", "<cmd>bNext<CR>")
-map("n", "<leader>Q", "<cmd>q<CR>")
+-- map("n", "<leader>qq", "<cmd>q<CR>")
 map("n", "<leader>ww", "<C-w><C-w>")
 map("n", "U", "<C-r>")
 

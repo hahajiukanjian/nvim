@@ -9,8 +9,8 @@ return {
         },
 
         config = function()
-            vim.cmd([[colorscheme tokyonight-day]])
-            -- vim.cmd([[colorscheme tokyonight]])
+            -- vim.cmd([[colorscheme tokyonight-day]])
+            vim.cmd([[colorscheme tokyonight]])
             require('lualine').setup {
                 options = {
                     theme = 'tokyonight'

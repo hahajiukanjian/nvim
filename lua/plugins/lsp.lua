@@ -73,7 +73,9 @@ return {
         require("neoconf").setup()
         require("neodev").setup()
         require("fidget").setup()
-        require("lspsaga").setup()
+        require("lspsaga").setup({
+            code_action_icon = "", -- 设置这个为空可以去掉动作提示图标
+        })
         require("mason").setup()
         -- local capabilities = require('cmp_nvim_lsp').default_capabilities()
         require("mason-lspconfig").setup({

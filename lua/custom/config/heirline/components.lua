@@ -1,17 +1,18 @@
-local palette = require('catppuccin.palettes').get_palette 'mocha'
-local utils = require 'heirline.utils'
-local conditions = require 'heirline.conditions'
-local icons = require 'custom.ui.icons'
+local palette = require('catppuccin.palettes').get_palette 'mocha' -- 获取 Catppuccin 主题的调色板
+local utils = require 'heirline.utils' -- Heirline 的实用工具函数
+local conditions = require 'heirline.conditions' -- Heirline 的状态条件函数，例如是否启用 LSP
+local icons = require 'custom.ui.icons' -- 自定义图标集
 local colors = {
-  diag_warn = utils.get_highlight('DiagnosticWarn').fg,
-  diag_error = utils.get_highlight('DiagnosticError').fg,
-  diag_hint = utils.get_highlight('DiagnosticHint').fg,
-  diag_info = utils.get_highlight('DiagnosticInfo').fg,
-  git_del = utils.get_highlight('diffDeleted').fg,
-  git_add = utils.get_highlight('diffAdded').fg,
-  git_change = utils.get_highlight('diffChanged').fg,
+  diag_warn = utils.get_highlight('DiagnosticWarn').fg, -- 诊断警告颜色
+  diag_error = utils.get_highlight('DiagnosticError').fg, -- 诊断错误颜色
+  diag_hint = utils.get_highlight('DiagnosticHint').fg, -- 诊断提示颜色
+  diag_info = utils.get_highlight('DiagnosticInfo').fg, -- 诊断信息颜色
+  git_del = utils.get_highlight('diffDeleted').fg, -- Git 删除颜色
+  git_add = utils.get_highlight('diffAdded').fg, -- Git 添加颜色
+  git_change = utils.get_highlight('diffChanged').fg, -- Git 修改颜色
 }
--- overseer
+
+-- 显示 Overseer 任务状态，如运行、成功、失败等
 local function OverseerTasksForStatus(st)
   return {
     condition = function(self)
@@ -29,18 +30,14 @@ local function OverseerTasksForStatus(st)
 end
 
 local M = {}
-M.Spacer = { provider = ' ' }
-M.Fill = { provider = '%=' }
+M.Spacer = { provider = ' ' } -- 空格
+M.Fill = { provider = '%=' } -- 填充符，保持两边对齐
 M.Ruler = {
-  -- %l = current line number
-  -- %L = number of lines in the buffer
-  -- %c = column number
-  -- %P = percentage through file of displayed window
-  provider = '%(%l/%L%)(%P)',
+  provider = '%(%l/%L%)(%P)', -- 显示行号、总行数、文件位置百分比
 }
 M.ScrollBar = {
   static = {
-    sbar = { '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█' },
+    sbar = { ' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█' }, -- 滚动条字符
   },
   provider = function(self)
     local curr_line = vim.api.nvim_win_get_cursor(0)[1]
@@ -48,10 +45,10 @@ M.ScrollBar = {
     local i = math.floor((curr_line - 1) / lines * #self.sbar) + 1
     return string.rep(self.sbar[i], 2)
   end,
-  hl = { fg = palette.yellow, bg = palette.base },
+  hl = { fg = palette.yellow, bg = palette.base }, -- 滚动条的前景和背景颜色
 }
 
--- Spacing providers
+-- 定义右边的填充和间隔，适应多种组件布局
 M.RightPadding = function(child, num_space)
   local result = {
     condition = child.condition,
@@ -60,11 +57,13 @@ M.RightPadding = function(child, num_space)
   }
   if num_space ~= nil then
     for _ = 2, num_space do
-      table.insert(result, M.Spacer)
+      table.insert(result, M.Spacer) -- 添加额外空格
     end
   end
   return result
 end
+
+-- 显示vim的各种模式
 M.Mode = {
   -- get vim current mode, this information will be required by the provider
   -- and the highlight functions, so we compute it only once per component
@@ -147,24 +146,25 @@ M.Mode = {
   -- Re-evaluate the component only on ModeChanged event!
   -- Also allows the statusline to be re-evaluated when entering operator-pending mode
   update = {
-    'ModeChanged',
+    'ModeChanged', -- 当模式改变时更新
     pattern = '*:*',
     callback = vim.schedule_wrap(function()
-      vim.cmd 'redrawstatus'
+      vim.cmd 'redrawstatus' -- 重新绘制状态栏
     end),
   },
 }
 
+-- 录制宏时的状态显示
 M.MacroRecording = {
-  condition = conditions.is_active,
+  condition = conditions.is_active, -- 仅在活动窗口显示
   init = function(self)
-    self.reg_recording = vim.fn.reg_recording()
+    self.reg_recording = vim.fn.reg_recording() -- 获取当前正在录制的宏
     self.status_dict = vim.b.gitsigns_status_dict or { added = 0, removed = 0, changed = 0 }
     self.has_changes = self.status_dict.added ~= 0 or self.status_dict.removed ~= 0 or self.status_dict.changed ~= 0
   end,
   {
     condition = function(self)
-      return self.reg_recording ~= ''
+      return self.reg_recording ~= '' -- 如果正在录制宏
     end,
     {
       provider = '󰻃 ',
@@ -179,15 +179,15 @@ M.MacroRecording = {
     hl = { fg = palette.text, bg = palette.base },
   },
   update = { 'RecordingEnter', 'RecordingLeave' },
-} -- MacroRecording
+}
 
+-- 显示 LSP 启用状态
 M.LSPActive = {
   condition = conditions.lsp_attached,
   update = { 'LspAttach', 'LspDetach' },
   provider = function()
     local names = {}
-    ---@diagnostic disable-next-line: deprecated
-    for _, server in pairs(vim.lsp.get_active_clients { bufnr = 0 }) do
+    for _, server in pairs(vim.lsp.get_active_clients { bufnr = 0 }) do -- 获取当前 LSP 客户端
       table.insert(names, server.name)
     end
     return table.concat(names, ',')
@@ -195,6 +195,7 @@ M.LSPActive = {
   hl = { fg = palette.surface1, bold = false },
 }
 
+-- 显示文件类型
 M.FileType = {
   provider = function()
     return vim.bo.filetype
@@ -202,6 +203,7 @@ M.FileType = {
   hl = { fg = utils.get_highlight('Type').fg, bold = true },
 }
 
+-- 显示 Codeium 状态
 M.CodeiumStatus = {
   init = function(self)
     self.codeium_exist = vim.fn.exists '*codeium#GetStatusString' == 1
@@ -230,7 +232,7 @@ M.CodeiumStatus = {
   end,
 }
 
--- Git
+-- Git 状态显示组件
 M.Git = {
   condition = conditions.is_git_repo,
 

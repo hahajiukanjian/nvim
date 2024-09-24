@@ -97,7 +97,7 @@ opt.scrolloff = 5
 -- 设置命令行高度为 0
 -- 这样可以节省更多空间，通常用于启用状态栏插件（如 lualine），如果不需要额外的命令行空间。
 -- 参考链接：https://www.reddit.com/r/neovim/comments/1cll8g8/statusline_is_not_at_the_bottom_of_the_terminal/
-opt.cmdheight = 0
+opt.cmdheight = 1
 
 -- 设置命令的自动补全选项
 -- 显示补全菜单，但不自动选择第一项

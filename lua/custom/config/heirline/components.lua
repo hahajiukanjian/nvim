@@ -243,13 +243,15 @@ M.Git = {
 
   hl = { fg = palette.flamingo },
 
-  { -- git branch name
+  {
+    -- Git 分支名称
     provider = function(self)
       return ' ' .. self.status_dict.head
     end,
     hl = { bold = true },
   },
   {
+    -- Git 添加的文件数量
     provider = function(self)
       local count = self.status_dict.added or 0
       return count > 0 and (' +' .. count)
@@ -257,6 +259,7 @@ M.Git = {
     hl = { fg = colors.git_add },
   },
   {
+    -- Git 删除的文件数量
     provider = function(self)
       local count = self.status_dict.removed or 0
       return count > 0 and (' -' .. count)
@@ -264,6 +267,7 @@ M.Git = {
     hl = { fg = colors.git_del },
   },
   {
+    -- Git 修改的文件数量
     provider = function(self)
       local count = self.status_dict.changed or 0
       return count > 0 and (' ~' .. count)
@@ -272,26 +276,27 @@ M.Git = {
   },
 }
 
--- Dianostics
+-- 显示诊断信息，例如错误、警告、提示等
 M.Diagnostics = {
-  condition = conditions.has_diagnostics,
+  condition = conditions.has_diagnostics, -- 当存在诊断信息时显示
   static = {
-    error_icon = icons.diagnostics.Error,
-    warn_icon = icons.diagnostics.Warn,
-    info_icon = icons.diagnostics.Info,
-    hint_icon = icons.diagnostics.Hint,
+    error_icon = icons.diagnostics.Error, -- 错误图标
+    warn_icon = icons.diagnostics.Warn, -- 警告图标
+    info_icon = icons.diagnostics.Info, -- 信息图标
+    hint_icon = icons.diagnostics.Hint, -- 提示图标
   },
 
   init = function(self)
-    self.errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
-    self.warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
-    self.hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
-    self.info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
+    self.errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR }) -- 获取错误数量
+    self.warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN }) -- 获取警告数量
+    self.hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT }) -- 获取提示数量
+    self.info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO }) -- 获取信息数量
   end,
 
-  update = { 'DiagnosticChanged', 'BufEnter' },
+  update = { 'DiagnosticChanged', 'BufEnter' }, -- 在诊断信息或缓冲区变化时更新
 
   {
+    -- 显示错误数量
     provider = function(self)
       -- 0 is just another output, we can decide to print it or not!
       return self.errors > 0 and (self.error_icon .. self.errors .. ' ')
@@ -299,25 +304,29 @@ M.Diagnostics = {
     hl = { fg = colors.diag_error },
   },
   {
+    -- 显示警告数量
     provider = function(self)
       return self.warnings > 0 and (self.warn_icon .. self.warnings .. ' ')
     end,
     hl = { fg = colors.diag_warn },
   },
   {
+    -- 显示信息数量
     provider = function(self)
       return self.info > 0 and (self.info_icon .. self.info .. ' ')
     end,
     hl = { fg = colors.diag_info },
   },
   {
+    -- 显示提示数量
     provider = function(self)
       return self.hints > 0 and (self.hint_icon .. self.hints)
     end,
     hl = { fg = colors.diag_hint },
   },
-} -- Diagnostics
+}
 
+-- 文件图标显示组件
 M.FileIcon = {
   init = function(self)
     local filename = self.filename
@@ -331,7 +340,8 @@ M.FileIcon = {
     return { fg = self.icon_color }
   end,
 }
--- we redefine the filename component, as we probably only want the tail and not the relative path
+
+-- 文件名显示组件
 M.FileName = {
   provider = function(self)
     -- self.filename will be defined later, just keep looking at the example!
@@ -347,12 +357,13 @@ M.FileName = {
 -- this looks exactly like the FileFlags component that we saw in
 -- #crash-course-part-ii-filename-and-friends, but we are indexing the bufnr explicitly
 -- also, we are adding a nice icon for terminal buffers.
+-- 文件标志组件，如只读、不可修改等状态
 M.FileFlags = {
   {
     condition = function(self)
       return vim.api.nvim_get_option_value('modified', { buf = self.bufnr })
     end,
-    provider = ' 􀴥 ',
+    provider = '  ',
     hl = function(self)
       return { fg = palette.text, bold = self.is_active }
     end,
@@ -372,6 +383,7 @@ M.FileFlags = {
   },
 }
 
+-- Overseer 任务状态显示组件
 M.Overseer = {
   condition = function()
     return package.loaded.overseer
@@ -383,18 +395,19 @@ M.Overseer = {
   end,
   static = {
     symbols = {
-      ['CANCELED'] = ' 􀕧 ',
-      ['FAILURE'] = ' 􀁐 ',
-      ['SUCCESS'] = ' 􀁢 ',
-      ['RUNNING'] = ' 􁾤 ',
+      ['CANCELED'] = ' 󰜺 ',
+      ['FAILURE'] = '  ',
+      ['SUCCESS'] = '  ',
+      ['RUNNING'] = '  ',
     },
   },
-  M.RightPadding(OverseerTasksForStatus 'CANCELED'),
-  M.RightPadding(OverseerTasksForStatus 'RUNNING'),
-  M.RightPadding(OverseerTasksForStatus 'SUCCESS'),
-  M.RightPadding(OverseerTasksForStatus 'FAILURE'),
+  M.RightPadding(OverseerTasksForStatus 'CANCELED'), -- 显示已取消任务的数量
+  M.RightPadding(OverseerTasksForStatus 'RUNNING'), -- 显示正在运行任务的数量
+  M.RightPadding(OverseerTasksForStatus 'SUCCESS'), -- 显示成功完成任务的数量
+  M.RightPadding(OverseerTasksForStatus 'FAILURE'), -- 显示失败任务的数量
 }
 
+-- 文件名块组件，包括文件图标、文件名和文件标志
 M.FileNameBlock = {
   init = function(self)
     local bufnr = self.bufnr and self.bufnr or 0
@@ -406,6 +419,7 @@ M.FileNameBlock = {
   M.FileFlags,
 }
 
+-- Tabline 文件名块组件，允许点击操作
 M.TablineFileNameBlock = vim.tbl_extend('force', M.FileNameBlock, {
   on_click = {
     callback = function(_, minwid, _, button)
@@ -425,4 +439,3 @@ M.TablineFileNameBlock = vim.tbl_extend('force', M.FileNameBlock, {
 })
 
 return M
-

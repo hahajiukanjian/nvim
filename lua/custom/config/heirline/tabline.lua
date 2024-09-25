@@ -1,12 +1,10 @@
-local utils = require 'heirline.utils' -- 引入 heirline 的工具库
-local palette = require('catppuccin.palettes').get_palette 'mocha' -- 获取 Catppuccin 主题的颜色调色板
-local components = require 'custom.config.heirline.components' -- 引入自定义的 Heirline 组件
+local utils = require 'heirline.utils'
+local palette = require('catppuccin.palettes').get_palette 'latte'
+local components = require 'custom.config.heirline.components'
 
-
--- 定义一个关闭按钮（TablineCloseButton），用于关闭未修改的缓冲区
+-- a nice "x" button to close the buffer
 local TablineCloseButton = {
   condition = function(self)
-    -- 条件：只有在缓冲区未被修改时才显示关闭按钮
     return not vim.api.nvim_get_option_value('modified', { buf = self.bufnr })
   end,
   { provider = ' ' },
@@ -28,11 +26,10 @@ local TablineCloseButton = {
   },
 }
 
--- 定义缓冲区左侧的分割线（TablineBufferLeftIndicator）
+-- The final touch!
 local TablineBufferLeftIndicator = {
   provider = '┃ ',
   hl = function(self)
-    -- 根据缓冲区是否处于活动状态设置不同的前景色
     return { fg = self.is_active and palette.yellow or palette.base, bg = palette.base, bold = true }
   end,
 }
@@ -43,11 +40,10 @@ local BufferLine = utils.make_buflist(
   TablineBufferBlock,
   { provider = ' ', hl = { fg = 'gray' } }, -- left truncation, optional (defaults to "<")
   { provider = ' ', hl = { fg = 'gray' } } -- right trunctation, also optional (defaults to ...... yep, ">")
-  -- by the way, open a lot of buffers and try clicking them ;)
+-- by the way, open a lot of buffers and try clicking them ;)
 )
 
 -- this is the default function used to retrieve buffers
--- 获取缓冲区列表的函数
 local get_bufs = function()
   return vim.tbl_filter(function(bufnr)
     return vim.api.nvim_get_option_value('buflisted', { buf = bufnr })
@@ -55,11 +51,9 @@ local get_bufs = function()
 end
 
 -- initialize the buflist cache
--- 初始化缓冲区列表缓存
 local buflist_cache = {}
 
 -- setup an autocmd that updates the buflist_cache every time that buffers are added/removed
--- 设置自动命令，每当缓冲区添加/删除时更新缓冲区缓存
 vim.api.nvim_create_autocmd({ 'UIEnter', 'BufAdd', 'BufDelete' }, {
   callback = function()
     vim.schedule(function()
@@ -72,17 +66,15 @@ vim.api.nvim_create_autocmd({ 'UIEnter', 'BufAdd', 'BufDelete' }, {
       end
 
       -- check how many buffers we have and set showtabline accordingly
-      -- 根据缓冲区数量设置 showtabline 选项
       if #buflist_cache > 1 then
-        vim.o.showtabline = 2 -- always
+        vim.o.showtabline = 2            -- always
       elseif vim.o.showtabline ~= 1 then -- don't reset the option if it's already at default value
-        vim.o.showtabline = 1 -- only when #tabpages > 1 -- 只在有多个标签页时显示 tabline
+        vim.o.showtabline = 1            -- only when #tabpages > 1
       end
     end)
   end,
 })
 
--- TabLine 偏移量组件，显示一些插件如 neo-tree 的宽度信息
 local TabLineOffset = {
   condition = function(self)
     local win = vim.api.nvim_tabpage_list_wins(0)[1]
@@ -90,7 +82,7 @@ local TabLineOffset = {
     self.winid = win
 
     if vim.bo[bufnr].filetype == 'neo-tree' then
-      self.title = '' -- 如果文件类型为 neo-tree，不显示标题
+      self.title = ''
       self.hl = { bg = palette.base }
       return true
       -- elseif vim.bo[bufnr].filetype == "TagBar" then
@@ -107,34 +99,31 @@ local TabLineOffset = {
 
   hl = function(self)
     if vim.api.nvim_get_current_win() == self.winid then
-      return 'TablineSel' -- 如果是当前窗口，使用 TablineSel 的高亮样式
+      return 'TablineSel'
     else
-      return 'Tabline' -- 否则使用默认Tabline 的高亮样式
+      return 'Tabline'
     end
   end,
 }
 
--- 标签页组件
 local Tabpage = {
   provider = function(self)
-    return '%' .. self.tabnr .. 'T ' .. self.tabpage .. ' %T' -- 显示标签页编号
+    return '%' .. self.tabnr .. 'T ' .. self.tabpage .. ' %T'
   end,
   hl = function(self)
     if not self.is_active then
       return 'TabLine'
     else
-      return 'TabLineSel' -- 活动标签页使用 TabLineSel 样式
+      return 'TabLineSel'
     end
   end,
 }
 
--- 标签页关闭按钮
 local TabpageClose = {
   provider = '%999X ✗ %X',
   hl = 'TabLine',
 }
 
--- 标签页显示组件
 local TabPages = {
   -- only show this component if there's 2 or more tabpages
   condition = function()
@@ -146,4 +135,3 @@ local TabPages = {
 }
 
 return { TabLineOffset, BufferLine, TabPages }
-

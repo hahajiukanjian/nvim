@@ -19,12 +19,12 @@ g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
 
 --- nord
 -- 禁用 Nord 主题中的斜体和粗体
-g.nord_italic = false
-g.nord_bold = false
+-- g.nord_italic = false
+-- g.nord_bold = false
 -- 透明的光标行高亮显示
 -- g.nord_cursorline_transparent = true
 -- 禁用背景颜色（适用于透明背景的主题）
-g.nord_disable_background = true
+-- g.nord_disable_background = true
 
 
 
@@ -35,7 +35,7 @@ opt.termguicolors = true
 -- 启用行号显示。此选项让每一行的左侧显示实际的行号。
 opt.number = true
 
--- 不启用软换行。如果一行太长而无法容纳在屏幕上，会将其分成多行显示。 
+-- 不启用软换行。如果一行太长而无法容纳在屏幕上，会将其分成多行显示。
 opt.wrap = true
 
 -- 只显示一个全局状态栏，而不是每个窗口都有一个。设置 3 会在所有窗口共享一个状态栏。
@@ -48,24 +48,24 @@ opt.showmode = false
 -- 设置缩进相关选项
 -- opt.tabstop = 4          -- 一个 tab 字符的宽度为 4 个空格
 -- opt.shiftwidth = 4       -- 每次缩进的空格数为 4
--- opt.expandtab = true     -- 将 tab 键转为空格
-opt.shiftround = true    -- 将缩进对齐到 `shiftwidth` 的整数倍
-opt.autoindent = true    -- 复制前一行的缩进
-opt.smartindent = true   -- 根据代码结构自动设置缩进
+opt.expandtab = true   -- 将 tab 键转为空格
+opt.shiftround = true  -- 将缩进对齐到 `shiftwidth` 的整数倍
+opt.autoindent = true  -- 复制前一行的缩进
+opt.smartindent = true -- 根据代码结构自动设置缩进
 
 -- 启用断行缩进。换行后，续行会保持与原行缩进一致，这样看起来更加整齐。
 opt.breakindent = true
 
 -- 启用持久化撤销。即使关闭文件或重启 Neovim，也可以通过撤销历史恢复以前的修改。
 opt.undofile = true
-opt.undodir = vim.fn.expand('$HOME/.local/share/nvim/undo')  -- 撤销历史的保存目录
+opt.undodir = vim.fn.expand('$HOME/.local/share/nvim/undo') -- 撤销历史的保存目录
 
 -- 启用忽略大小写的搜索。启用智能大小写。
 opt.ignorecase = true
 opt.smartcase = true
 
 -- 根据需要自动显示或隐藏符号列（通常用于显示诊断、断点等符号）。
-opt.signcolumn = 'auto'
+opt.signcolumn = 'yes'
 
 -- 设置光标悬停后触发事件的等待时间（例如诊断信息）为 250 毫秒。
 opt.updatetime = 250
@@ -97,7 +97,7 @@ opt.scrolloff = 5
 -- 设置命令行高度为 0
 -- 这样可以节省更多空间，通常用于启用状态栏插件（如 lualine），如果不需要额外的命令行空间。
 -- 参考链接：https://www.reddit.com/r/neovim/comments/1cll8g8/statusline_is_not_at_the_bottom_of_the_terminal/
-opt.cmdheight = 1
+opt.cmdheight = 0
 
 -- 设置命令的自动补全选项
 -- 显示补全菜单，但不自动选择第一项

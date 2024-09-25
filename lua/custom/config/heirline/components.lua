@@ -1,18 +1,17 @@
-local palette = require('catppuccin.palettes').get_palette 'mocha' -- 获取 Catppuccin 主题的调色板
-local utils = require 'heirline.utils' -- Heirline 的实用工具函数
-local conditions = require 'heirline.conditions' -- Heirline 的状态条件函数，例如是否启用 LSP
-local icons = require 'custom.ui.icons' -- 自定义图标集
+local palette = require('catppuccin.palettes').get_palette 'latte'
+local utils = require 'heirline.utils'
+local conditions = require 'heirline.conditions'
+local icons = require 'custom.ui.icons'
 local colors = {
-  diag_warn = utils.get_highlight('DiagnosticWarn').fg, -- 诊断警告颜色
-  diag_error = utils.get_highlight('DiagnosticError').fg, -- 诊断错误颜色
-  diag_hint = utils.get_highlight('DiagnosticHint').fg, -- 诊断提示颜色
-  diag_info = utils.get_highlight('DiagnosticInfo').fg, -- 诊断信息颜色
-  git_del = utils.get_highlight('diffDeleted').fg, -- Git 删除颜色
-  git_add = utils.get_highlight('diffAdded').fg, -- Git 添加颜色
-  git_change = utils.get_highlight('diffChanged').fg, -- Git 修改颜色
+  diag_warn = utils.get_highlight('DiagnosticWarn').fg,
+  diag_error = utils.get_highlight('DiagnosticError').fg,
+  diag_hint = utils.get_highlight('DiagnosticHint').fg,
+  diag_info = utils.get_highlight('DiagnosticInfo').fg,
+  git_del = utils.get_highlight('diffDeleted').fg,
+  git_add = utils.get_highlight('diffAdded').fg,
+  git_change = utils.get_highlight('diffChanged').fg,
 }
-
--- 显示 Overseer 任务状态，如运行、成功、失败等
+-- overseer
 local function OverseerTasksForStatus(st)
   return {
     condition = function(self)
@@ -30,14 +29,18 @@ local function OverseerTasksForStatus(st)
 end
 
 local M = {}
-M.Spacer = { provider = ' ' } -- 空格
-M.Fill = { provider = '%=' } -- 填充符，保持两边对齐
+M.Spacer = { provider = ' ' }
+M.Fill = { provider = '%=' }
 M.Ruler = {
-  provider = '%(%l/%L%)(%P)', -- 显示行号、总行数、文件位置百分比
+  -- %l = current line number
+  -- %L = number of lines in the buffer
+  -- %c = column number
+  -- %P = percentage through file of displayed window
+  provider = '%(%l/%L%)(%P)',
 }
 M.ScrollBar = {
   static = {
-    sbar = { ' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█' }, -- 滚动条字符
+    sbar = { '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█' },
   },
   provider = function(self)
     local curr_line = vim.api.nvim_win_get_cursor(0)[1]
@@ -45,10 +48,10 @@ M.ScrollBar = {
     local i = math.floor((curr_line - 1) / lines * #self.sbar) + 1
     return string.rep(self.sbar[i], 2)
   end,
-  hl = { fg = palette.yellow, bg = palette.base }, -- 滚动条的前景和背景颜色
+  hl = { fg = palette.yellow, bg = palette.base },
 }
 
--- 定义右边的填充和间隔，适应多种组件布局
+-- Spacing providers
 M.RightPadding = function(child, num_space)
   local result = {
     condition = child.condition,
@@ -57,13 +60,11 @@ M.RightPadding = function(child, num_space)
   }
   if num_space ~= nil then
     for _ = 2, num_space do
-      table.insert(result, M.Spacer) -- 添加额外空格
+      table.insert(result, M.Spacer)
     end
   end
   return result
 end
-
--- 显示vim的各种模式
 M.Mode = {
   -- get vim current mode, this information will be required by the provider
   -- and the highlight functions, so we compute it only once per component
@@ -146,25 +147,24 @@ M.Mode = {
   -- Re-evaluate the component only on ModeChanged event!
   -- Also allows the statusline to be re-evaluated when entering operator-pending mode
   update = {
-    'ModeChanged', -- 当模式改变时更新
+    'ModeChanged',
     pattern = '*:*',
     callback = vim.schedule_wrap(function()
-      vim.cmd 'redrawstatus' -- 重新绘制状态栏
+      vim.cmd 'redrawstatus'
     end),
   },
 }
 
--- 录制宏时的状态显示
 M.MacroRecording = {
-  condition = conditions.is_active, -- 仅在活动窗口显示
+  condition = conditions.is_active,
   init = function(self)
-    self.reg_recording = vim.fn.reg_recording() -- 获取当前正在录制的宏
+    self.reg_recording = vim.fn.reg_recording()
     self.status_dict = vim.b.gitsigns_status_dict or { added = 0, removed = 0, changed = 0 }
     self.has_changes = self.status_dict.added ~= 0 or self.status_dict.removed ~= 0 or self.status_dict.changed ~= 0
   end,
   {
     condition = function(self)
-      return self.reg_recording ~= '' -- 如果正在录制宏
+      return self.reg_recording ~= ''
     end,
     {
       provider = '󰻃 ',
@@ -179,15 +179,15 @@ M.MacroRecording = {
     hl = { fg = palette.text, bg = palette.base },
   },
   update = { 'RecordingEnter', 'RecordingLeave' },
-}
+} -- MacroRecording
 
--- 显示 LSP 启用状态
 M.LSPActive = {
   condition = conditions.lsp_attached,
   update = { 'LspAttach', 'LspDetach' },
   provider = function()
     local names = {}
-    for _, server in pairs(vim.lsp.get_active_clients { bufnr = 0 }) do -- 获取当前 LSP 客户端
+    ---@diagnostic disable-next-line: deprecated
+    for _, server in pairs(vim.lsp.get_active_clients { bufnr = 0 }) do
       table.insert(names, server.name)
     end
     return table.concat(names, ',')
@@ -195,7 +195,6 @@ M.LSPActive = {
   hl = { fg = palette.surface1, bold = false },
 }
 
--- 显示文件类型
 M.FileType = {
   provider = function()
     return vim.bo.filetype
@@ -203,7 +202,6 @@ M.FileType = {
   hl = { fg = utils.get_highlight('Type').fg, bold = true },
 }
 
--- 显示 Codeium 状态
 M.CodeiumStatus = {
   init = function(self)
     self.codeium_exist = vim.fn.exists '*codeium#GetStatusString' == 1
@@ -232,7 +230,7 @@ M.CodeiumStatus = {
   end,
 }
 
--- Git 状态显示组件
+-- Git
 M.Git = {
   condition = conditions.is_git_repo,
 
@@ -243,15 +241,13 @@ M.Git = {
 
   hl = { fg = palette.flamingo },
 
-  {
-    -- Git 分支名称
+  { -- git branch name
     provider = function(self)
       return ' ' .. self.status_dict.head
     end,
     hl = { bold = true },
   },
   {
-    -- Git 添加的文件数量
     provider = function(self)
       local count = self.status_dict.added or 0
       return count > 0 and (' +' .. count)
@@ -259,7 +255,6 @@ M.Git = {
     hl = { fg = colors.git_add },
   },
   {
-    -- Git 删除的文件数量
     provider = function(self)
       local count = self.status_dict.removed or 0
       return count > 0 and (' -' .. count)
@@ -267,7 +262,6 @@ M.Git = {
     hl = { fg = colors.git_del },
   },
   {
-    -- Git 修改的文件数量
     provider = function(self)
       local count = self.status_dict.changed or 0
       return count > 0 and (' ~' .. count)
@@ -276,27 +270,26 @@ M.Git = {
   },
 }
 
--- 显示诊断信息，例如错误、警告、提示等
+-- Dianostics
 M.Diagnostics = {
-  condition = conditions.has_diagnostics, -- 当存在诊断信息时显示
+  condition = conditions.has_diagnostics,
   static = {
-    error_icon = icons.diagnostics.Error, -- 错误图标
-    warn_icon = icons.diagnostics.Warn, -- 警告图标
-    info_icon = icons.diagnostics.Info, -- 信息图标
-    hint_icon = icons.diagnostics.Hint, -- 提示图标
+    error_icon = icons.diagnostics.Error,
+    warn_icon = icons.diagnostics.Warn,
+    info_icon = icons.diagnostics.Info,
+    hint_icon = icons.diagnostics.Hint,
   },
 
   init = function(self)
-    self.errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR }) -- 获取错误数量
-    self.warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN }) -- 获取警告数量
-    self.hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT }) -- 获取提示数量
-    self.info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO }) -- 获取信息数量
+    self.errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+    self.warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+    self.hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
+    self.info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
   end,
 
-  update = { 'DiagnosticChanged', 'BufEnter' }, -- 在诊断信息或缓冲区变化时更新
+  update = { 'DiagnosticChanged', 'BufEnter' },
 
   {
-    -- 显示错误数量
     provider = function(self)
       -- 0 is just another output, we can decide to print it or not!
       return self.errors > 0 and (self.error_icon .. self.errors .. ' ')
@@ -304,29 +297,25 @@ M.Diagnostics = {
     hl = { fg = colors.diag_error },
   },
   {
-    -- 显示警告数量
     provider = function(self)
       return self.warnings > 0 and (self.warn_icon .. self.warnings .. ' ')
     end,
     hl = { fg = colors.diag_warn },
   },
   {
-    -- 显示信息数量
     provider = function(self)
       return self.info > 0 and (self.info_icon .. self.info .. ' ')
     end,
     hl = { fg = colors.diag_info },
   },
   {
-    -- 显示提示数量
     provider = function(self)
       return self.hints > 0 and (self.hint_icon .. self.hints)
     end,
     hl = { fg = colors.diag_hint },
   },
-}
+} -- Diagnostics
 
--- 文件图标显示组件
 M.FileIcon = {
   init = function(self)
     local filename = self.filename
@@ -340,8 +329,7 @@ M.FileIcon = {
     return { fg = self.icon_color }
   end,
 }
-
--- 文件名显示组件
+-- we redefine the filename component, as we probably only want the tail and not the relative path
 M.FileName = {
   provider = function(self)
     -- self.filename will be defined later, just keep looking at the example!
@@ -350,27 +338,28 @@ M.FileName = {
     return filename
   end,
   hl = function(self)
-    return { fg = self.is_active and palette.text or palette.subtext0, bold = self.is_active or self.is_visible, italic = self.is_active }
+    return { fg = self.is_active and palette.text or palette.subtext0, bold = self.is_active or self.is_visible, italic =
+    self.is_active }
   end,
 }
 
 -- this looks exactly like the FileFlags component that we saw in
 -- #crash-course-part-ii-filename-and-friends, but we are indexing the bufnr explicitly
 -- also, we are adding a nice icon for terminal buffers.
--- 文件标志组件，如只读、不可修改等状态
 M.FileFlags = {
   {
     condition = function(self)
       return vim.api.nvim_get_option_value('modified', { buf = self.bufnr })
     end,
-    provider = '  ',
+    provider = ' 􀴥 ',
     hl = function(self)
       return { fg = palette.text, bold = self.is_active }
     end,
   },
   {
     condition = function(self)
-      return not vim.api.nvim_get_option_value('modifiable', { buf = self.bufnr }) or vim.api.nvim_get_option_value('readonly', { buf = self.bufnr })
+      return not vim.api.nvim_get_option_value('modifiable', { buf = self.bufnr }) or
+      vim.api.nvim_get_option_value('readonly', { buf = self.bufnr })
     end,
     provider = function(self)
       if vim.api.nvim_get_option_value('buftype', { buf = self.bufnr }) == 'terminal' then
@@ -383,7 +372,6 @@ M.FileFlags = {
   },
 }
 
--- Overseer 任务状态显示组件
 M.Overseer = {
   condition = function()
     return package.loaded.overseer
@@ -395,19 +383,18 @@ M.Overseer = {
   end,
   static = {
     symbols = {
-      ['CANCELED'] = ' 󰜺 ',
-      ['FAILURE'] = '  ',
-      ['SUCCESS'] = '  ',
-      ['RUNNING'] = '  ',
+      ['CANCELED'] = ' 􀕧 ',
+      ['FAILURE'] = ' 􀁐 ',
+      ['SUCCESS'] = ' 􀁢 ',
+      ['RUNNING'] = ' 􁾤 ',
     },
   },
-  M.RightPadding(OverseerTasksForStatus 'CANCELED'), -- 显示已取消任务的数量
-  M.RightPadding(OverseerTasksForStatus 'RUNNING'), -- 显示正在运行任务的数量
-  M.RightPadding(OverseerTasksForStatus 'SUCCESS'), -- 显示成功完成任务的数量
-  M.RightPadding(OverseerTasksForStatus 'FAILURE'), -- 显示失败任务的数量
+  M.RightPadding(OverseerTasksForStatus 'CANCELED'),
+  M.RightPadding(OverseerTasksForStatus 'RUNNING'),
+  M.RightPadding(OverseerTasksForStatus 'SUCCESS'),
+  M.RightPadding(OverseerTasksForStatus 'FAILURE'),
 }
 
--- 文件名块组件，包括文件图标、文件名和文件标志
 M.FileNameBlock = {
   init = function(self)
     local bufnr = self.bufnr and self.bufnr or 0
@@ -419,7 +406,6 @@ M.FileNameBlock = {
   M.FileFlags,
 }
 
--- Tabline 文件名块组件，允许点击操作
 M.TablineFileNameBlock = vim.tbl_extend('force', M.FileNameBlock, {
   on_click = {
     callback = function(_, minwid, _, button)

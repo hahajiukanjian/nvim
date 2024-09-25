@@ -1,84 +1,37 @@
 -- 定义一个函数来设置键位映射
 local function map(mode, lhs, rhs, desc, opts)
-  local options = { noremap = true, silent = true, desc = desc } -- 默认为禁止递归映射并添加描述
-  if opts then options = vim.tbl_extend('force', options, opts) end
-  vim.keymap.set(mode, lhs, rhs, options) -- 使用 vim.keymap.set 来支持 desc 参数
+    local options = { noremap = true, silent = true, desc = desc } -- 默认为禁止递归映射并添加描述
+    if opts then options = vim.tbl_extend('force', options, opts) end
+    vim.keymap.set(mode, lhs, rhs, options)                      -- 使用 vim.keymap.set 来支持 desc 参数
 end
 
 function smart_quit()
-  -- 获取当前列出的 buffer 数量
-  local buffers = vim.fn.len(vim.fn.getbufinfo({buflisted = 1}))
-  -- if buffers == 1 then
-  --   vim.cmd('q')
-  -- else
-  --   vim.cmd('bd')
-  -- end
+    -- 获取当前列出的 buffer 数量
+    local buffers = vim.fn.len(vim.fn.getbufinfo({ buflisted = 1 }))
+    -- 获取当前窗口数量
+    local windows = vim.fn.win_getid() -- 获取窗口的数量
 
-  -- 获取当前窗口数量
-  local windows = vim.fn.win_getid() -- 获取窗口的数量
-
-  -- 如果有多个窗口，执行:bd 关闭当前 buffer
-  if windows > 1000 then
-      vim.cmd('q')
-  -- 如果只有一个窗口，判断 buffer 的数量
-  elseif buffers == 1 then
-      vim.cmd('q')
-  -- 否则执行 :q 退出当前窗口
-  else
-      vim.cmd('bd')
-  end
-end
-
--- 定义函数来调整窗口大小
-function AdjustWindow(direction)
-  local cur_win = vim.api.nvim_get_current_win() -- 获取当前窗口
-  local cur_pos = vim.api.nvim_win_get_position(cur_win) -- 获取当前窗口的坐标
-  local cols = vim.api.nvim_get_option("columns") -- 获取当前 Neovim 的总列数
-  local rows = vim.api.nvim_get_option("lines") -- 获取当前 Neovim 的总行数
-
-  if direction == "up" then
-    if cur_pos[1] > 1 then
-      vim.cmd("resize +5") -- 向上调整上方窗口
+    -- 如果有多个窗口，执行 :q 退出当前窗口
+    if windows > 1000 then
+        vim.cmd('q')
+        -- 如果只有一个窗口，判断 buffer 的数量
+    elseif buffers == 1 then
+        vim.cmd('q')
+        -- 否则执行 :bd 关闭当前 buffer
+    else
+        vim.cmd('bd')
     end
-  elseif direction == "down" then
-    if cur_pos[1] < rows - 1 then
-      vim.cmd("resize -5") -- 向下调整下方窗口
-    end
-  elseif direction == "left" then
-    if cur_pos[2] > 1 then
-      vim.cmd("vertical resize +5") -- 向左调整左侧窗口
-    end
-  elseif direction == "right" then
-    if cur_pos[2] < cols - 1 then
-      vim.cmd("vertical resize -5") -- 向右调整右侧窗口
-    end
-  end
 end
 
 ------------------------------ normal config -----------------------------
 -- 将 Q 键映射到 smart_quit 函数
-vim.api.nvim_set_keymap('n', 'Q', ':lua smart_quit()<CR>', {noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', 'Q', ':lua smart_quit()<CR>', { noremap = true, silent = true })
 
 -- 禁用 Ctrl+方向键
 map('n', '<C-l>', '<NOP>', '禁用 Ctrl + l')
 map('n', '<C-k>', '<NOP>', '禁用 Ctrl + k')
 map('n', '<C-j>', '<NOP>', '禁用 Ctrl + j')
 map('n', '<C-h>', '<NOP>', '禁用 Ctrl + h')
-
--- 调整上面的 buffer 增大高度
-vim.api.nvim_set_keymap('n', '<C-j>', ':wincmd -<CR>', { noremap = true, silent = true })
-
--- 调整下面的 buffer 增大高度
-vim.api.nvim_set_keymap('n', '<C-k>', ':wincmd +<CR>', { noremap = true, silent = true })
-
--- 调整左边的 buffer 增加宽度
-vim.api.nvim_set_keymap('n', '<C-h>', ':wincmd <<CR>', { noremap = true, silent = true })
-
--- 调整右边的 buffer 增加宽度
-vim.api.nvim_set_keymap('n', '<C-l>', ':wincmd ><CR>', { noremap = true, silent = true })
-
-
-
 
 -- 水平新增窗口
 -- 垂直新增窗口
@@ -135,8 +88,8 @@ map('n', '<leader>ww', '<C-w><C-w>', '切换到下一个窗口')
 map('n', 'U', '<C-r>', '重新做上一次撤销的操作')
 
 -- 切换到上下一个 buffer
-map('n', '<A-S-l>', '<cmd>bnext<cr>', '切换到上一个buffer')
-map('n', '<A-S-h>', '<cmd>bprev<cr>', '切换到下一个buffer')
+map('n', '<C-S-l>', '<cmd>bnext<cr>', '切换到上一个buffer')
+map('n', '<C-S-h>', '<cmd>bprev<cr>', '切换到下一个buffer')
 
 -- 快速切换到上下一个快速修复项（quickfix item）
 map('n', ']q', '<cmd>cnext<cr>', '切换到下一个快速修复项')

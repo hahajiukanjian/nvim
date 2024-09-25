@@ -2,7 +2,7 @@
 local function map(mode, lhs, rhs, desc, opts)
     local options = { noremap = true, silent = true, desc = desc } -- 默认为禁止递归映射并添加描述
     if opts then options = vim.tbl_extend('force', options, opts) end
-    vim.keymap.set(mode, lhs, rhs, options)                      -- 使用 vim.keymap.set 来支持 desc 参数
+    vim.keymap.set(mode, lhs, rhs, options)                        -- 使用 vim.keymap.set 来支持 desc 参数
 end
 
 function smart_quit()
@@ -33,6 +33,8 @@ map('n', '<C-k>', '<NOP>', '禁用 Ctrl + k')
 map('n', '<C-j>', '<NOP>', '禁用 Ctrl + j')
 map('n', '<C-h>', '<NOP>', '禁用 Ctrl + h')
 
+map('n', 'W', '%')
+
 -- 水平新增窗口
 -- 垂直新增窗口
 map('n', '<leader>ss', '<C-w>v', '水平分割窗口')
@@ -60,7 +62,7 @@ map('n', ')', 'K', '向上跳 5 行')
 map('n', 'n', '^', '跳到行首')
 map('n', 'N', '0', '跳到行首')
 -- m 和 M 键移动到行尾
-map('n', 'm', 'g_', '跳到行尾')
+map('n', 'm', '$', '跳到行尾')
 map('n', 'M', '$', '跳到行尾')
 
 -- ; 键映射为命令模式
@@ -121,3 +123,4 @@ map('x', '<S-tab>', '<gv', '减少缩进')
 
 -- 可视模式下复制到系统剪贴板
 map('x', '<leader>y', '\"+y', '复制到系统剪贴板')
+map('x', 'W', '%')

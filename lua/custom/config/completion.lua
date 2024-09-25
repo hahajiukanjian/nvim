@@ -55,11 +55,11 @@ cmp.setup {
 
   -- 设置补全源的优先级
   sources = {
+    { name = 'nvim_lsp', priority = 800 },  -- LSP 补全
     { name = 'luasnip',  priority = 1000 }, -- 代码片段补全
-    { name = 'nvim_lsp', priority = 800 }, -- LSP 补全
-    { name = 'path',     priority = 600 }, -- 文件路径补全
+    { name = 'path',     priority = 600 },  -- 文件路径补全
     {
-      name = 'buffer',                     -- 基于缓冲区内容的补全
+      name = 'buffer',                      -- 基于缓冲区内容的补全
       option = {
         get_bufnrs = function()
           local buf = vim.api.nvim_get_current_buf()

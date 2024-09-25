@@ -71,8 +71,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- 重命名符号
     map('<leader>rn', vim.lsp.buf.rename, 'Lsp Rename')
 
+    map(')', vim.lsp.buf.hover, '显示光标下的内容文档')
+
     -- 执行代码操作
-    map('<leader>la', vim.lsp.buf.code_action, 'Lsp Action')
+    map('<A-CR>', vim.lsp.buf.code_action, 'Lsp Action')
 
     -- 跳转到声明位置
     map('gD', vim.lsp.buf.declaration, 'Goto Declaration')
@@ -127,7 +129,7 @@ local mason_servers = {
   },
 }
 
-require 'lspconfig'.dcmls.setup {
+require 'lspconfig'.dartls.setup {
   capabilities = capabilities,
 }
 

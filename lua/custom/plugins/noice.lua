@@ -1,6 +1,6 @@
 return {
-  'folke/noice.nvim',            -- 插件的 GitHub 仓库
-  keys = { ';', ':', '/', '?' }, -- 在插入模式下，按这些键将触发 lazy load
+  'folke/noice.nvim', -- 插件的 GitHub 仓库
+  -- keys = { ':', '/', '?' },      -- 在插入模式下，按这些键将触发 lazy load
   config = function()
     require('noice').setup {     -- 设置 noice.nvim 的配置
       presets = {

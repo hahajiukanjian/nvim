@@ -11,22 +11,6 @@ local colors = {
   git_add = utils.get_highlight('diffAdded').fg,
   git_change = utils.get_highlight('diffChanged').fg,
 }
--- overseer
-local function OverseerTasksForStatus(st)
-  return {
-    condition = function(self)
-      return self.tasks[st]
-    end,
-    provider = function(self)
-      return string.format('%s%d', self.symbols[st], #self.tasks[st])
-    end,
-    hl = function(_)
-      return {
-        fg = utils.get_highlight(string.format('Overseer%s', st)).fg,
-      }
-    end,
-  }
-end
 
 local M = {}
 M.Spacer = { provider = ' ' }
@@ -66,7 +50,7 @@ M.RightPadding = function(child, num_space)
   return result
 end
 
-M.LeftPadding = function(child, num_space)
+M.LeftPadding = function(child)
   local result = {
     M.Spacer,
     M.Spacer,
@@ -475,35 +459,12 @@ M.FileFlags = {
   },
 }
 
-M.Overseer = {
-  condition = function()
-    return package.loaded.overseer
-  end,
-  init = function(self)
-    local tasks = require('overseer.task_list').list_tasks { unique = true }
-    local tasks_by_status = require('overseer.util').tbl_group_by(tasks, 'status')
-    self.tasks = tasks_by_status
-  end,
-  static = {
-    symbols = {
-      ['CANCELED'] = ' 􀕧 ',
-      ['FAILURE'] = ' 􀁐 ',
-      ['SUCCESS'] = ' 􀁢 ',
-      ['RUNNING'] = ' 􁾤 ',
-    },
-  },
-  M.RightPadding(OverseerTasksForStatus 'CANCELED'),
-  M.RightPadding(OverseerTasksForStatus 'RUNNING'),
-  M.RightPadding(OverseerTasksForStatus 'SUCCESS'),
-  M.RightPadding(OverseerTasksForStatus 'FAILURE'),
-}
-
 M.FileNameBlock = {
   init = function(self)
     local bufnr = self.bufnr and self.bufnr or 0
     self.filename = vim.api.nvim_buf_get_name(bufnr)
   end,
-  hl = { bg = palette.base, fg = palette.text },
+  -- hl = { bg = palette.base, fg = palette.text },
   M.FileIcon,
   M.FileName,
   M.FileFlags,

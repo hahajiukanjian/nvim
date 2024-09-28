@@ -9,8 +9,9 @@ return {
     },
   },
   opts = {
-    floating_window_scaling_factor = 1,
-    yazi_floating_window_border = "none",
+    floating_window_scaling_factor = 0.9,
+    yazi_floating_window_winblend = 0,
+    yazi_floating_window_border = "rounded",
     open_for_directories = true,
     open_multiple_tabs = true,
     keymaps = {

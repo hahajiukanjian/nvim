@@ -10,9 +10,8 @@ return { -- statusline
   components.Fill,
   components.RightPadding(components.LSPActive),
   components.RightPadding(components.FileType, 0),
-  components.RightPadding(components.Overseer, 0),
   components.RightPadding(components.CodeiumStatus, 0),
   components.RightPadding(components.Ruler),
   components.ScrollBar,
-  components.LeftPadding(components.ModeR, 2),
+  components.LeftPadding(components.ModeR),
 }

@@ -29,9 +29,9 @@ local TablineCloseButton = {
 -- The final touch!
 local TablineBufferLeftIndicator = {
   provider = '┃ ',
-  hl = function(self)
-    return { fg = self.is_active and palette.yellow or palette.base, bg = palette.base, bold = true }
-  end,
+  -- hl = function(self)
+  --   return { fg = self.is_active and palette.yellow or palette.base, bg = palette.base, bold = true }
+  -- end,
 }
 local TablineBufferBlock = { TablineBufferLeftIndicator, components.TablineFileNameBlock, TablineCloseButton }
 

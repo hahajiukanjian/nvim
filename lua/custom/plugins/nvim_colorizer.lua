@@ -9,7 +9,8 @@ return {
   -- 配置插件的选项
   opts = {
     user_default_options = {
-      names = false, -- 禁用颜色名称识别（例如 'red', 'blue'），仅支持十六进制或 RGB 颜色值
+      -- 禁用颜色名称识别（例如 'red', 'blue'），仅支持十六进制或 RGB 颜色值
+      names = false,
     },
   },
 }

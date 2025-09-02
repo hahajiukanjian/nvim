@@ -7,6 +7,9 @@ return {
     opts = function()
       return {
         transparent = true,
+        colorscheme = function()
+          require("solarized-osaka").load()
+        end,
       }
     end,
   },

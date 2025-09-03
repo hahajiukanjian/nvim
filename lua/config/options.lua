@@ -11,3 +11,13 @@ opt.winborder = "rounded" -- 单实线边框
 opt.colorcolumn = "80"
 
 g.disable_autoformat = true
+
+if vim.g.neovide then
+  vim.o.guifont = "Maple Mono NF"
+  vim.g.neovide_hide_mouse_when_typing = true
+  vim.g.neovide_theme = 'auto'
+  vim.g.neovide_input_ime = true
+  vim.g.neovide_cursor_animation_length = 0.10
+  vim.g.neovide_cursor_trail_size = 1.0
+  vim.opt.linespace = 3
+end

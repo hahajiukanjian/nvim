@@ -4,6 +4,7 @@
 local map = vim.keymap.set
 
 map("i", "jk", "<ESC>")
+map("n", "zz", "zt")
 
 map({ "n", "x" }, "K", "<NOP>")
 

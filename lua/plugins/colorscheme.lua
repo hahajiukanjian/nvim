@@ -1,16 +1,14 @@
 return {
   {
-    "craftzdog/solarized-osaka.nvim",
-    branch = "osaka",
-    lazy = true,
+    "navarasu/onedark.nvim",
     priority = 1000,
-    opts = function()
-      return {
+    config = function()
+      require("onedark").setup({
+        style = "darker",
         transparent = true,
-        colorscheme = function()
-          require("solarized-osaka").load()
-        end,
-      }
+      })
+      require("onedark").load()
+      vim.api.nvim_set_hl(0, "visual", { reverse = true })
     end,
   },
 }

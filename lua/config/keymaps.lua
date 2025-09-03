@@ -26,6 +26,8 @@ map({ "n", "x" }, "N", "0")
 map({ "n", "x" }, "M", "$")
 
 map({ "n", "x", "o" }, "S", "<cmd>w<CR>", { noremap = true })
+map({ "n", "x", "o" }, "s", "<NOP>")
+map({ "n", "x", "o" }, "ss", "<cmd>noh<CR>")
 
 map({ "n", "x" }, ";", ":")
 map({ "n", "x" }, "；", ":")
@@ -45,7 +47,7 @@ local function setup_n_mappings()
   map({ "n", "x", "o" }, "n", "^", {
     noremap = true, -- 禁用递归，彻底切断与原生搜索的关联
     silent = true,
-    desc = "跳转到行首非空字符（覆盖搜索）",
+    desc = "跳转到行首非空字符",
   })
 
   -- 2. 同步处理N键
@@ -54,7 +56,7 @@ local function setup_n_mappings()
   pcall(vim.keymap.del, "o", "N")
   map({ "n", "x", "o" }, "N", "0", {
     noremap = true,
-    desc = "跳转到行首（覆盖搜索）",
+    desc = "跳转到行首",
   })
 end
 

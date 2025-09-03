@@ -1,4 +1,3 @@
--- 覆盖 LazyVim 内置的 colorscheme 插件配置，避免冲突代码
 return {
   {
     "catppuccin/nvim",

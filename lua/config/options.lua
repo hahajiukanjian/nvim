@@ -12,7 +12,8 @@ opt.winborder = "rounded" -- 单实线边框
 opt.colorcolumn = "80"
 
 g.disable_autoformat = true
-vim.lsp.inlay_hint.enable(false)
+
+opt.relativenumber = false
 
 if vim.g.neovide then
   o.guifont = "Maple Mono NF"

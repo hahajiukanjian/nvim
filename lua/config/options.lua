@@ -9,3 +9,5 @@ opt.winborder = "rounded" -- 单实线边框
 -- 可选值："none"（无）、"single"（单实线）、"double"（双实线）、"rounded"（圆角，部分终端支持）
 
 opt.colorcolumn = "80"
+
+g.disable_autoformat = true

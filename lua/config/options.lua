@@ -3,6 +3,7 @@
 -- Add any additional options here
 local g = vim.g
 local opt = vim.opt
+local o = vim.o
 
 -- 常规窗口边框（分割窗口、标签页等）
 opt.winborder = "rounded" -- 单实线边框
@@ -11,13 +12,15 @@ opt.winborder = "rounded" -- 单实线边框
 opt.colorcolumn = "80"
 
 g.disable_autoformat = true
+vim.lsp.inlay_hint.enable(false)
 
 if vim.g.neovide then
-  vim.o.guifont = "Maple Mono NF"
-  vim.g.neovide_hide_mouse_when_typing = true
-  vim.g.neovide_theme = 'auto'
-  vim.g.neovide_input_ime = true
-  vim.g.neovide_cursor_animation_length = 0.10
-  vim.g.neovide_cursor_trail_size = 1.0
-  vim.opt.linespace = 3
+  o.guifont = "Maple Mono NF"
+  g.neovide_hide_mouse_when_typing = true
+  -- g.neovide_theme = 'auto'
+  -- vim.g.neovide_input_ime = true
+  g.neovide_cursor_animation_length = 0
+  g.neovide_cursor_trail_size = 1.0
+  opt.linespace = 3
+  g.neovide_scroll_animation_length = 0
 end

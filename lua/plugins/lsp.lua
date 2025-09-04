@@ -152,4 +152,96 @@ return {
       vim.treesitter.language.register("markdown", "mdx")
     end,
   },
+
+
+  -- lua/plugins/blink.lua
+  {
+    "saghen/blink.cmp",
+    version = "*",
+    event = "InsertEnter",
+    dependencies = {
+      "L3MON4D3/LuaSnip",
+      "rafamadriz/friendly-snippets",
+    },
+    opts = {
+    },
+    config = function()
+      local blink = require("blink.cmp")
+      require("luasnip.loaders.from_vscode").lazy_load()
+
+      blink.setup({
+        keymap = {
+          preset = "none", -- 不加载默认预设，自定义全部快捷键
+
+          ["<Tab>"] = { "select_next", "fallback" },
+          ["<S-Tab>"] = { "select_prev", "fallback" },
+          ["<CR>"] = { "accept", "fallback" },
+
+          ["<Up>"] = { "select_prev", "fallback" },
+          ["<Down>"] = { "select_next", "fallback" },
+          ["<C-p>"] = { "select_prev", "fallback_to_mappings" },
+          ["<C-n>"] = { "select_next", "fallback_to_mappings" },
+
+          ["<C-b>"] = { "scroll_documentation_up", "fallback" },
+          ["<C-f>"] = { "scroll_documentation_down", "fallback" },
+
+          ["<C-k>"] = { "show_signature", "hide_signature", "fallback" },
+
+          -- ⌘+空格主动触发补全（手动触发）
+          ["<C-e>"] = {
+            function(cmp)
+              cmp.show({}) -- 可根据需要指定 providers
+            end,
+          },
+
+          ["<C-S-e>"] = {
+            function()
+              vim.lsp.buf.signature_help() -- 调用LSP的函数提示
+            end,
+          },
+        },
+
+        appearance = {
+          nerd_font_variant = "mono",
+        },
+
+        completion = {
+          documentation = { auto_show = true },
+          trigger = {
+            show_in_snippet = false, -- 与 super-tab 配合建议关闭
+          },
+          list = {
+            selection = {
+              -- 默认不选中第一个补全选项
+              preselect = false
+              -- preselect = function(ctx)
+              --   return not blink.snippet_active({ direction = 1 })
+              -- end,
+            },
+          },
+        },
+
+        sources = {
+          default = { "lsp", "path", "snippets", "buffer" },
+        },
+
+        fuzzy = {
+          implementation = "prefer_rust_with_warning",
+        },
+
+        cmdline = {
+          sources = function()
+            local cmd_type = vim.fn.getcmdtype()
+            if cmd_type == "/" or cmd_type == "?" then
+              return { "buffer" }
+            end
+            if cmd_type == ":" then
+              return { "cmdline" }
+            end
+            return {}
+          end,
+        },
+      })
+    end,
+  }
 }

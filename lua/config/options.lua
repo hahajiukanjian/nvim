@@ -18,9 +18,9 @@ opt.relativenumber = false
 if vim.g.neovide then
   o.guifont = "Maple Mono NF"
   g.neovide_hide_mouse_when_typing = true
-  -- g.neovide_theme = 'auto'
-  -- vim.g.neovide_input_ime = true
-  g.neovide_cursor_animation_length = 0
+  g.neovide_theme = 'auto'
+  vim.g.neovide_input_ime = true
+  g.neovide_cursor_animation_length = 0.15
   g.neovide_cursor_trail_size = 1.0
   opt.linespace = 3
   g.neovide_scroll_animation_length = 0

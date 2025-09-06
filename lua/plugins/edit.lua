@@ -16,12 +16,18 @@ return {
         json = { "prettier" },
         python = { "black" },
         markdown = { "prettier" },
+        cpp = { "clang_format" },
+        c = { "clang_format" },
         -- 其他文件类型...
       },
 
       formatters = {
         stylua = { command = "stylua" },
         prettier = { command = "prettier" },
+        clang_format = {
+          -- 关键：指定 Google 风格
+          args = { "--style=Google", "--fallback-style=LLVM" },
+        },
       },
     },
 

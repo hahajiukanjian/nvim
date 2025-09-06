@@ -28,3 +28,11 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- 关闭拼写检查
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "java", "cpp", "python", "lua", "markdown" }, -- 代码文件类型
+  callback = function()
+    vim.opt_local.spell = false -- 局部关闭拼写检查
+  end,
+})
+

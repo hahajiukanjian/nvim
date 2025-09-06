@@ -11,9 +11,40 @@ return {
       -- 确保mason自动安装所需LSP服务器
       servers = {
         -- C/C++
-        clangd = {},
+        clangd = {
+          -- 可选：通过 clangd 直接指定格式化风格
+          cmd = {
+            "clangd",
+            -- 移除 --clang-format-style=Google（clangd 不支持该参数）
+            "--enable-config", -- 允许加载项目中的 .clang-format 文件
+            "--completion-style=detailed", -- 增强补全体验（可选）
+          },
+        },
         -- Java
-        jdtls = {},
+        jdtls = {
+          -- 关键：配置jdtls加载Lombok
+          init_options = {
+            vmArgs = "-javaagent:" ..
+            vim.fn.expand("~/.m2/repository/org/projectlombok/lombok/1.18.24/lombok-1.18.24.jar"),
+            -- 注意：路径需替换为你本地Lombok的实际路径（可通过Maven/Gradle下载）
+          },
+          settings = {
+            java = {
+              eclipse = {
+                downloadSources = true,
+              },
+              maven = {
+                downloadSources = true,
+              },
+              implementationsCodeLens = {
+                enabled = true,
+              },
+              referencesCodeLens = {
+                enabled = true,
+              },
+            },
+          },
+        },
         -- Python
         pyright = {}, -- 或使用 pylsp（需在mason中安装）
         -- HTML

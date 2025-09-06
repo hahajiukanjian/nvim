@@ -15,6 +15,8 @@ g.disable_autoformat = true
 
 opt.relativenumber = false
 
+opt.spell = false -- 全局关闭拼写检查
+
 if vim.g.neovide then
   o.guifont = "Maple Mono NF"
   g.neovide_hide_mouse_when_typing = true

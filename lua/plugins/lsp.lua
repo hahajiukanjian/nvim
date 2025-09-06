@@ -16,7 +16,7 @@ return {
           cmd = {
             "clangd",
             -- 移除 --clang-format-style=Google（clangd 不支持该参数）
-            "--enable-config", -- 允许加载项目中的 .clang-format 文件
+            "--enable-config",             -- 允许加载项目中的 .clang-format 文件
             "--completion-style=detailed", -- 增强补全体验（可选）
           },
         },
@@ -25,7 +25,7 @@ return {
           -- 关键：配置jdtls加载Lombok
           init_options = {
             vmArgs = "-javaagent:" ..
-            vim.fn.expand("~/.m2/repository/org/projectlombok/lombok/1.18.24/lombok-1.18.24.jar"),
+                vim.fn.expand("~/.m2/repository/org/projectlombok/lombok/1.18.24/lombok-1.18.24.jar"),
             -- 注意：路径需替换为你本地Lombok的实际路径（可通过Maven/Gradle下载）
           },
           settings = {
@@ -274,5 +274,38 @@ return {
         },
       })
     end,
-  }
+  },
+
+  {
+    "github/copilot.vim",
+    event = "InsertEnter", -- 进入插入模式时加载
+    config = function()
+      -- 配置 Copilot 快捷键（与 nvim-cmp 兼容）
+      vim.g.copilot_no_tab_map = true -- 禁用 Tab 映射（避免与补全冲突）
+      vim.api.nvim_set_keymap(
+        "i",
+        "<C-l>", -- 使用 Ctrl+l 接受补全
+        'copilot#Accept("")',
+        { expr = true, silent = true, desc = "Accept Copilot suggestion" }
+      )
+      vim.api.nvim_set_keymap(
+        "i",
+        "<C-]>", -- 使用 Ctrl+] 查看下一个建议
+        "<Plug>(copilot-next)",
+        { silent = true, desc = "Next Copilot suggestion" }
+      )
+      vim.api.nvim_set_keymap(
+        "i",
+        "<C-[>", -- 使用 Ctrl+[ 查看上一个建议
+        "<Plug>(copilot-prev)",
+        { silent = true, desc = "Previous Copilot suggestion" }
+      )
+      vim.api.nvim_set_keymap(
+        "i",
+        "<C-d>", -- 使用 Ctrl+d 关闭当前建议
+        "<Plug>(copilot-dismiss)",
+        { silent = true, desc = "Dismiss Copilot suggestion" }
+      )
+    end,
+  },
 }
